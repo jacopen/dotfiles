@@ -4,15 +4,8 @@ set expandtab
 set autoindent
 set nocompatible
 syntax enable
-"filetype plugin indent on
-
-set rtp+=~/dotfiles/vimfiles/vundle.git/
-call vundle#rc()
-Bundle 'Shougo/neocomplcache'
-Bundle 'Shougo/unite.vim'
-Bundle 'thinca/vim-ref'
-Bundle 'thinca/vim-quickrun'
-filetype plugin indent on     " required!
+filetype off
+filetype plugin indent on 
 
 set showmatch
 set matchtime=2
@@ -37,3 +30,7 @@ onoremap gc :<C-u>normal gc<Enter>
 ":set encoding=utf-8
 ":set fileencodings=iso-2022-jp,euc-jp,sjis,utf-8
 ":set fileformats=unix,dos,mac
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+Bundle 'gmarik/vundle'
