@@ -28,7 +28,7 @@ case ${UID} in
     RPROMPT="%{${fg[green]}%}[%~:%T]%{${reset_color}%}"
     ;;
 *)
-    PROMPT="%{${fg[red]}%}%n@%m%%%{${reset_color}%} "
+    PROMPT="%{${fg[red]}%}%n@%m ✘╹◡╹✘%{${reset_color}%} "
     PROMPT2="%{${fg[red]}%}%_%%%{${reset_color}%} "
     SPROMPT="%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%} "
     RPROMPT="%{${fg[green]}%}[%~:%T]%{${reset_color}%}"
