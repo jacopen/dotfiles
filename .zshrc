@@ -47,8 +47,8 @@ setopt auto_pushd
  
 # command correct edition before each completion attempt
 #
-setopt correct
-setopt correct_all
+#setopt correct
+#setopt correct_all
  
 # compacked complete list display
 #
