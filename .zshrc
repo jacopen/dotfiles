@@ -262,3 +262,8 @@ esac
 # load user .zshrc configuration file
 #
 [ -f ${HOME}/.zshrc.mine ] && source ${HOME}/.zshrc.mine
+ 
+# rvm
+#[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
