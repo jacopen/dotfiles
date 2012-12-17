@@ -20,7 +20,7 @@ esac
 autoload colors
 colors
 
-COLOR=("cyan" "red" "green" "blue" "white" "yellow" "cyan" "red" "green" "blue" "white" "yellow")
+COLOR=("red" "blue" "white" "green" "cyan" "yellow" "cyan" "red" "green" "blue" "white" "yellow")
 host_color=${COLOR[${#${HOST}}]}
 
 case ${UID} in
