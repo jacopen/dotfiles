@@ -19,7 +19,10 @@ esac
 #
 autoload colors
 colors
- 
+
+COLOR=("cyan" "red" "green" "blue" "white" "yellow" "cyan" "red" "green" "blue" "white" "yellow")
+host_color=${COLOR[${#${HOST}}]}
+
 case ${UID} in
 0)
     PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') %{${fg[red]}%}%n@%m%#%{${reset_color}%} "
@@ -33,7 +36,7 @@ case ${UID} in
     SPROMPT="%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%} "
     RPROMPT="%{${fg[green]}%}[%~:%T]%{${reset_color}%}"
     [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-        PROMPT="%{${fg[cyan]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}"
+        PROMPT="%{${fg[${host_color}]}%}$(echo ${HOST%%.*} | tr '[a-z]' '[A-Z]') ${PROMPT}"
     ;;
 esac
  
