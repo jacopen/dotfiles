@@ -14,6 +14,17 @@ set ignorecase
 set smartcase
 set t_kD=^?
 set backspace=indent,eol,start
+set number
+set ruler
+set hidden
+set noswapfile
+set autoread
+set encoding=utf8
+set fileencoding=utf-8
+set ignorecase
+set smartcase
+set incsearch
+set history=100
 
 nnoremap <Space>.  :<C-u>edit $MYVIMRC<Enter>
 nnoremap <Space>s. :<C-u>source $MYVIMRC<Enter>
