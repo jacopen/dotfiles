@@ -5,11 +5,12 @@ set autoindent
 set nocompatible
 syntax enable
 filetype off
-filetype plugin indent on 
+filetype plugin indent on
 
 set showmatch
 set matchtime=2
 set incsearch
+set hlsearch
 set ignorecase
 set smartcase
 set t_kD=^?
@@ -23,8 +24,16 @@ set encoding=utf8
 set fileencoding=utf-8
 set ignorecase
 set smartcase
-set incsearch
 set history=100
+highlight LineNr ctermbg=grey ctermfg=darkgrey
+highlight ZenkakuSpace cterm=underline ctermfg=blue
+set ruf=%45(%12f%=\ %m%{'['.(&fenc!=''?&fenc:&enc).']'}\ %l-%v\ %p%%\ [%02B]%)
+set statusline=%f:%{substitute(getcwd(),'.*/','','')}\ %m%=%{(&fenc!=''?&fenc:&enc).':'.strpart(&ff,0,1)}\ %l-%v\ %p%%\ %02B
+set showcmd
+set cmdheight=1
+set laststatus=2
+set list
+set listchars=tab:»-,trail:-,eol:↲,extends:»,precedes:«,nbsp:%
 
 nnoremap <Space>.  :<C-u>edit $MYVIMRC<Enter>
 nnoremap <Space>s. :<C-u>source $MYVIMRC<Enter>
