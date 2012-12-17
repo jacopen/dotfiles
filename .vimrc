@@ -25,7 +25,6 @@ set fileencoding=utf-8
 set ignorecase
 set smartcase
 set history=100
-highlight LineNr ctermbg=grey ctermfg=darkgrey
 highlight ZenkakuSpace cterm=underline ctermfg=blue
 set ruf=%45(%12f%=\ %m%{'['.(&fenc!=''?&fenc:&enc).']'}\ %l-%v\ %p%%\ [%02B]%)
 set statusline=%f:%{substitute(getcwd(),'.*/','','')}\ %m%=%{(&fenc!=''?&fenc:&enc).':'.strpart(&ff,0,1)}\ %l-%v\ %p%%\ %02B
