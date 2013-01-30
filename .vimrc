@@ -5,7 +5,6 @@ set autoindent
 set nocompatible
 syntax enable
 filetype off
-filetype plugin indent on
 
 set showmatch
 set matchtime=2
@@ -52,4 +51,6 @@ onoremap gc :<C-u>normal gc<Enter>
 
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
-Bundle 'gmarik/vundle'
+
+"vunlde.vimで管理してるpluginを読み込む
+source ~/dotfiles/.vimrc.bundle
