@@ -94,7 +94,7 @@ call vundle#rc()
   Bundle 'Shougo/neosnippets'
 
   " rubyでrequire先を補完する
-  " Bundle 'ujihisa/neco-ruby'
+  Bundle 'ujihisa/neco-ruby'
 
   " A neocomplcache plugin for English, using look command
   " Bundle 'ujihisa/neco-look'
@@ -146,9 +146,6 @@ call vundle#rc()
   " rails.vim : rails的なアレ
   Bundle 'tpope/vim-rails'
 
-  " Pydiction : Python用の入力補完
-  Bundle 'Pydiction'
-
   " ソースコード上のメソッド宣言、変数宣言の一覧を表示
   Bundle 'taglist.vim'
 
@@ -176,19 +173,19 @@ call vundle#rc()
   Bundle 'tpope/vim-markdown'
 
   " coffee script
-  Bundle 'kchmck/vim-coffee-script'
+  " Bundle 'kchmck/vim-coffee-script'
 
   " python
-  Bundle 'yuroyoro/vim-python'
+  " Bundle 'yuroyoro/vim-python'
 
   " scala
-  Bundle 'yuroyoro/vim-scala'
+  " Bundle 'yuroyoro/vim-scala'
 
   " clojure
-  Bundle 'jondistad/vimclojure'
+  " Bundle 'jondistad/vimclojure'
 
   " ghc-mod
-  Bundle 'eagletmt/ghcmod-vim'
+  " Bundle 'eagletmt/ghcmod-vim'
 
   " syntax checking plugins exist for eruby, haml, html, javascript, php, python, ruby and sass.
   Bundle 'scrooloose/syntastic'
@@ -244,10 +241,10 @@ call vundle#rc()
   Bundle 'yuroyoro/vimdoc_ja'
 
   " vim上のtwitter client
-  Bundle 'TwitVim'
+  " Bundle 'TwitVim'
 
   " Lingrのclient
-  Bundle 'tsukkee/lingr-vim'
+  " Bundle 'tsukkee/lingr-vim'
 
   " vimからGit操作する
   Bundle 'tpope/vim-fugitive'
