@@ -298,8 +298,7 @@ alias grill='ssh'
 # http://logrepo.blogspot.com/2010/12/zsh.html
 export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 
-files="${HOME}/dotfiles/zsh/*"
-for filepath in ${files}
+for filepath in $(ls ${HOME}/dotfiles/zsh)
 do
-  source ${filepath}
+  source ${HOME}/dotfiles/zsh/${filepath}
 done
