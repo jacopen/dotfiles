@@ -1,0 +1,15 @@
+[global]
+ioengine=libaio
+direct=1
+invalidate=1
+group_reporting
+directory=/home
+filename=test.bin
+runtime=60
+
+[Rand-Read-4k-qd32]
+readwrite=randread
+size=4G
+bs=4k
+iodepth=32
+numjobs=1
