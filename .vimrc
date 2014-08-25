@@ -459,4 +459,5 @@ endif
 " ターミナルでマウスを使用できるようにする
 set mouse=a
 set guioptions+=a
-set ttymouse=ttym
+set ttymouse=xterm2
+set ttym=xterm2
