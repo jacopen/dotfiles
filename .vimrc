@@ -112,13 +112,13 @@ filetype on
 filetype plugin on
 
 "" Tabs. May be overriten by autocmd rules
-set tabstop=2
-set softtabstop=0
-set shiftwidth=2
 set expandtab
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
 
 "" Map leader to ,
-let mapleader=','
+let umapleader=','
 
 "" Enable hidden buffers
 set hidden
@@ -422,7 +422,7 @@ let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
 
 au BufNewFile,BufRead *.rb,*.rbw,*.gemspec set filetype=ruby
-autocmd Filetype ruby setlocal ts=2 sts=2 sw=2
+autocmd Filetype ruby setlocal expandtab ts=2 sts=2 sw=2
 
 " Tagbar
 nmap <silent> <F4> :TagbarToggle<CR>
@@ -461,3 +461,9 @@ set mouse=a
 set guioptions+=a
 set ttymouse=xterm2
 set ttym=xterm2
+set list
+set listchars=tab:>.,trail:_,eol:↲,extends:>,precedes:<,nbsp:%
+
+
+autocmd Filetype coffee setlocal expandtab ts=2 sts=2 sw=2
+autocmd Filetype javascript setlocal expandtab ts=2 sts=2 sw=2
