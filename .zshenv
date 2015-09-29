@@ -1,5 +1,5 @@
 # The next line updates PATH for the Google Cloud SDK.
-source '/Users/jacopen/google-cloud-sdk/path.zsh.inc'
+source '/home/jacopen/google-cloud-sdk/path.zsh.inc'
 # The next line enables bash completion for gcloud.
 # source '/Users/jacopen/google-cloud-sdk/completion.zsh.inc'
 #
