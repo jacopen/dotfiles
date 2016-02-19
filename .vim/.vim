@@ -1,1 +1,1 @@
-/home/jacopen/dotfiles_private/.vim
+/home/jacopen/dotfiles/.vim

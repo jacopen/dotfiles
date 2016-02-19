@@ -28,6 +28,7 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 "" NeoBundle install packages
 "*****************************************************************************
 NeoBundle 'scrooloose/nerdtree'
+NeoBundle 'jistr/vim-nerdtree-tabs'
 NeoBundle 'tpope/vim-commentary'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'kien/ctrlp.vim'
@@ -467,3 +468,5 @@ set listchars=tab:>.,trail:_,eol:↲,extends:>,precedes:<,nbsp:%
 
 autocmd Filetype coffee setlocal expandtab ts=2 sts=2 sw=2
 autocmd Filetype javascript setlocal expandtab ts=2 sts=2 sw=2
+
+let g:nerdtree_tabs_open_on_console_startup=1

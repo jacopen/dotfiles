@@ -1,7 +1,7 @@
 # copy from cheat git
 [user]
-  email = jacopen@gmail.com
-  name = Kazuto Kusama
+	email = jacopen@gmail.com
+	name = Kazuto Kusama
 
 [color]
   ui = auto
@@ -32,6 +32,7 @@
 [core]
   whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
 	editor = vim
+	excludesfile = /Users/jacopen/.gitignore_global
 
 [alias]
   st = status
@@ -43,3 +44,13 @@
   lol = log --graph --decorate --pretty=oneline --abbrev-commit
   lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
   ls = ls-files
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
