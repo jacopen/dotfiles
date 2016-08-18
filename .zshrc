@@ -58,7 +58,7 @@ case ${UID} in
 #    RPROMPT="%{${fg[green]}%}[%~:%T]%{${reset_color}%}"
     ;;
 *)
-    PROMPT="[%T] %{${fg[red]}%}%n@%m %~ ✘╹◡╹✘%{${reset_color}%} ${VCS}"
+    PROMPT="[%T] %{${fg[red]}%}%n@%m %~ (・Θ・)%{${reset_color}%} ${VCS}"
     PROMPT2="%{${fg[red]}%}%_%%%{${reset_color}%} "
     SPROMPT="%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%} "
 #    RPROMPT="%{${fg[green]}%}[%~:%T]%{${reset_color}%}"
@@ -181,9 +181,9 @@ bindkey "\\en" history-beginning-search-forward-end
 #
 bindkey "\e[Z" reverse-menu-complete
  
- 
-## Command history configuration
-#
+
+# Command history configuration
+
 HISTFILE=${HOME}/.zsh_history
 HISTSIZE=100000000
 SAVEHIST=100000000
