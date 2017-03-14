@@ -45,20 +45,18 @@ NeoBundle 'Shougo/vimproc.vim', {
       \     'unix' : 'make -f make_unix.mak',
       \    },
       \ }
-NeoBundle 'Shougo/vimshell.vim'
+"" NeoBundle 'Shougo/vimshell.vim'
 
 "" Snippets
 NeoBundle 'SirVer/ultisnips'
 NeoBundle 'honza/vim-snippets'
 
-"" Color
-NeoBundle 'tomasr/molokai'
 
 "" Custom bundles
 
 "" Go Lang Bundle
-NeoBundle "majutsushi/tagbar"
-NeoBundle "fatih/vim-go"
+"" NeoBundle "majutsushi/tagbar"
+"" NeoBundle "fatih/vim-go"
 
 
 "" Python Bundle
@@ -69,22 +67,22 @@ NeoBundle "Yggdroot/indentLine"
 
 
 "" HTML Bundle
-NeoBundle 'amirh/HTML-AutoCloseTag'
+"" NeoBundle 'amirh/HTML-AutoCloseTag'
 NeoBundle 'hail2u/vim-css3-syntax'
 NeoBundle 'gorodinskiy/vim-coloresque'
 NeoBundle 'tpope/vim-haml'
 
 
 "" Ruby Bundle
-NeoBundle "tpope/vim-rails"
-NeoBundle "tpope/vim-rake"
-NeoBundle "tpope/vim-projectionist"
-NeoBundle "thoughtbot/vim-rspec"
-NeoBundle "majutsushi/tagbar"
+"" NeoBundle "tpope/vim-rails"
+"" NeoBundle "tpope/vim-rake"
+"" NeoBundle "tpope/vim-projectionist"
+"" NeoBundle "thoughtbot/vim-rspec"
+"" NeoBundle "majutsushi/tagbar"
 
 
 "" Javascript Bundle
-NeoBundle "scrooloose/syntastic"
+"" NeoBundle "scrooloose/syntastic"
 
 
 
@@ -153,7 +151,6 @@ set number
 
 let no_buffers_menu=1
 highlight BadWhitespace ctermbg=red guibg=red
-colorscheme molokai
 
 set mousemodel=popup
 set t_Co=256
