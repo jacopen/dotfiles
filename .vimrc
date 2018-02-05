@@ -467,3 +467,20 @@ autocmd Filetype coffee setlocal expandtab ts=2 sts=2 sw=2
 autocmd Filetype javascript setlocal expandtab ts=2 sts=2 sw=2
 
 let g:nerdtree_tabs_open_on_console_startup=1
+
+" set paste自動化
+if &term =~ "xterm"
+    let &t_ti .= "\e[?2004h"
+    let &t_te .= "\e[?2004l"
+    let &pastetoggle = "\e[201~"
+
+    function XTermPasteBegin(ret)
+        set paste
+        return a:ret
+    endfunction
+
+    noremap <special> <expr> <Esc>[200~ XTermPasteBegin("0i")
+    inoremap <special> <expr> <Esc>[200~ XTermPasteBegin("")
+    cnoremap <special> <Esc>[200~ <nop>
+    cnoremap <special> <Esc>[201~ <nop>
+endif
