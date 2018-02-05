@@ -58,7 +58,8 @@ case ${UID} in
 #    RPROMPT="%{${fg[green]}%}[%~:%T]%{${reset_color}%}"
     ;;
 *)
-    PROMPT="[%T] %{${fg[red]}%}%n@%m %~ (・Θ・)%{${reset_color}%} ${VCS}"
+    #PROMPT="[%T] %{${fg[red]}%}%n@%m %~ (・Θ・)%{${reset_color}%} ${VCS}"
+    PROMPT="[%T] %{${fg[red]}%}%n@%m (・Θ・)%{${reset_color}%} ${VCS}"
     PROMPT2="%{${fg[red]}%}%_%%%{${reset_color}%} "
     SPROMPT="%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%} "
 #    RPROMPT="%{${fg[green]}%}[%~:%T]%{${reset_color}%}"
@@ -252,14 +253,16 @@ esac
 case "${TERM}" in
 xterm|xterm-color)
     export LSCOLORS=exfxcxdxbxegedabagacad
-    export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
-    zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
+    #export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+    #zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
+    export LS_COLORS='di=35:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+    zstyle ':completion:*' list-colors 'di=35' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
     ;;
 kterm-color)
     stty erase '^H'
     export LSCOLORS=exfxcxdxbxegedabagacad
-    export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
-    zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
+    export LS_COLORS='di=35:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+    zstyle ':completion:*' list-colors 'di=35' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
     ;;
 kterm)
     stty erase '^H'
@@ -296,9 +299,19 @@ esac
 alias grill='ssh'
 
 # http://logrepo.blogspot.com/2010/12/zsh.html
-export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+export PATH=/opt/local/bin:/opt/local/sbin:~/bin:$PATH
 
 for filepath in $(ls ${HOME}/dotfiles/zsh)
 do
   source ${HOME}/dotfiles/zsh/${filepath}
 done
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/jacopen/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/jacopen/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/jacopen/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/jacopen/google-cloud-sdk/completion.zsh.inc'; fi
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/Users/jacopen/.sdkman"
+[[ -s "/Users/jacopen/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jacopen/.sdkman/bin/sdkman-init.sh"
