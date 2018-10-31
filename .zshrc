@@ -59,7 +59,7 @@ case ${UID} in
     ;;
 *)
     #PROMPT="[%T] %{${fg[red]}%}%n@%m %~ (・Θ・)%{${reset_color}%} ${VCS}"
-    PROMPT="[%T] %{${fg[red]}%}%n@%m (・Θ・)%{${reset_color}%} ${VCS}"
+    PROMPT="[%T] %{${fg[red]}%}%n@%m %1~ (・Θ・)%{${reset_color}%} ${VCS}"
     PROMPT2="%{${fg[red]}%}%_%%%{${reset_color}%} "
     SPROMPT="%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%} "
 #    RPROMPT="%{${fg[green]}%}[%~:%T]%{${reset_color}%}"
