@@ -48,7 +48,7 @@ NeoBundle 'Shougo/vimproc.vim', {
 "" NeoBundle 'Shougo/vimshell.vim'
 
 "" Snippets
-NeoBundle 'SirVer/ultisnips'
+"NeoBundle 'SirVer/ultisnips'
 NeoBundle 'honza/vim-snippets'
 
 
