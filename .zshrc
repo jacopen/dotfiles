@@ -315,3 +315,5 @@ if [ -f '/Users/jacopen/google-cloud-sdk/completion.zsh.inc' ]; then source '/Us
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/Users/jacopen/.sdkman"
 [[ -s "/Users/jacopen/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jacopen/.sdkman/bin/sdkman-init.sh"
+
+source <(kubectl completion zsh)
