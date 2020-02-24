@@ -183,6 +183,10 @@ bindkey "\\en" history-beginning-search-forward-end
 bindkey "\e[Z" reverse-menu-complete
  
 
+# Forward - back word
+bindkey '^F'   forward-word
+bindkey '^B'   backward-word
+
 # Command history configuration
 
 HISTFILE=${HOME}/.zsh_history
