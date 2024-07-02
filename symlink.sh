@@ -9,6 +9,7 @@ mv ~/.byobu ~/.byobu.bak
 mv ~/.gitconfig ~/.gitconfig.bak
 mv ~/.ssh/config ~/.ssh/config.bak
 mv ~/.tmux.conf ~/.tmux.conf.bak
+mv ~/.config/nvim ~/.config/nvim.bak
 ln -s $CURRENT/.vimrc ~/.vimrc
 ln -s $CURRENT/.screenrc ~/.screenrc
 ln -s $CURRENT/.zshenv ~/.zshenv
@@ -18,3 +19,4 @@ ln -s $CURRENT/.byobu ~/.byobu
 ln -s $CURRENT/.gitconfig ~/.gitconfig
 ln -s $CURRENT/private/.ssh_config ~/.ssh/config
 ln -s $CURRENT/.tmux.conf ~/.tmux.conf
+ln -s $CURRENT/nvim ~/.config/nvim
