@@ -44,6 +44,14 @@
   lol = log --graph --decorate --pretty=oneline --abbrev-commit
   lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
   ls = ls-files
+  # Modern Git aliases
+  sw = switch
+  restore = restore
+  unstage = reset HEAD --
+  last = log -1 HEAD
+  visual = !gitk
+  amend = commit --amend
+  pushf = push --force-with-lease
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
