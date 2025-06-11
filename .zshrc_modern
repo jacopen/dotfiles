@@ -1,0 +1,211 @@
+# Modern .zshrc with Zinit plugin manager
+# Generated from template for user: Kazuto Kusama
+
+# Performance: measure startup time (uncomment for debugging)
+# zmodload zsh/zprof
+
+#-------------------
+# Zinit Installation and Setup
+#-------------------
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+
+# Download Zinit if not present
+if [[ ! -d $ZINIT_HOME ]]; then
+    mkdir -p "$(dirname $ZINIT_HOME)"
+    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
+
+# Load Zinit
+source "${ZINIT_HOME}/zinit.zsh"
+
+#-------------------
+# Environment Variables
+#-------------------
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# Path configuration
+export PATH="/Users/kkusama/bin:$PATH"
+export PATH="/Users/kkusama/.local/bin:$PATH"
+
+# History configuration
+export HISTFILE="/Users/kkusama/.zsh_history"
+export HISTSIZE=100000000
+export SAVEHIST=100000000
+
+#-------------------
+# Zsh Options
+#-------------------
+# Directory navigation
+setopt auto_cd auto_pushd
+
+# History
+setopt hist_ignore_all_dups append_history inc_append_history
+setopt hist_no_store hist_reduce_blanks hist_ignore_space
+setopt hist_verify share_history
+
+# Completion
+setopt auto_menu always_to_end auto_list list_packed list_types
+setopt magic_equal_subst print_eight_bit complete_aliases
+setopt noautoremoveslash nolistbeep no_beep
+
+#-------------------
+# Zinit Plugins
+#-------------------
+
+# Load important plugins first
+zinit load "zsh-users/zsh-autosuggestions"
+zinit load "zsh-users/zsh-syntax-highlighting"
+zinit load "zsh-users/zsh-completions"
+
+# Git enhancements
+zinit load "wfxr/forgit"
+
+# Directory jumping
+zinit load "agkozak/zsh-z"
+
+# Better completion for modern tools
+zinit ice as"completion"
+zinit snippet https://github.com/docker/cli/blob/master/contrib/completion/zsh/_docker
+
+# FZF integration (if available)
+if command -v fzf &> /dev/null; then
+    zinit load "junegunn/fzf"
+    zinit load "Aloxaf/fzf-tab"
+fi
+
+# Load Oh My Zsh plugins (cherry-picked)
+zinit snippet OMZP::git
+zinit snippet OMZP::colored-man-pages
+zinit snippet OMZP::command-not-found
+
+# Starship prompt (modern alternative to manual prompt)
+if command -v starship &> /dev/null; then
+    eval "$(starship init zsh)"
+else
+    # Fallback: Simple modern prompt with git info
+    zinit load "sindresorhus/pure"
+fi
+
+#-------------------
+# Key Bindings
+#-------------------
+bindkey -e  # Emacs mode
+
+# Enhanced navigation
+bindkey "^[[1~" beginning-of-line  # Home
+bindkey "^[[4~" end-of-line        # End
+bindkey "^[[3~" delete-char        # Del
+bindkey "^F" forward-word          # Ctrl+F
+bindkey "^B" backward-word         # Ctrl+B
+
+# History search
+bindkey "^P" history-beginning-search-backward
+bindkey "^N" history-beginning-search-forward
+bindkey "\e[Z" reverse-menu-complete  # Shift+Tab
+
+#-------------------
+# Completion Setup
+#-------------------
+autoload -Uz compinit
+compinit
+
+# Completion styling
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:descriptions' format '[%d]'
+zstyle ':completion:*:warnings' format 'No matches found'
+
+#-------------------
+# Modern Tool Aliases
+#-------------------
+# Load modern aliases if available
+[[ -f "/Users/kkusama/dotfiles/zsh/modern-aliases" ]] && source "/Users/kkusama/dotfiles/zsh/modern-aliases"
+
+#-------------------
+# Traditional Aliases (preserved from original)
+#-------------------
+alias where="command -v"
+alias j="jobs -l"
+alias g="git"
+alias v="vim"
+alias grill='ssh'
+
+# Platform-specific ls aliases
+case "${OSTYPE}" in
+    freebsd*|darwin*)
+        alias ls="ls -G -w"
+        ;;
+    linux*)
+        alias ls="ls --color"
+        ;;
+esac
+
+alias la="ls -a"
+alias lf="ls -F" 
+alias ll="ls -l"
+alias du="du -h"
+alias df="df -h"
+alias su="su -l"
+
+#-------------------
+# External Configuration Loading
+#-------------------
+# Load dotfiles zsh configurations
+for config_file in /Users/kkusama/dotfiles/zsh/*(N); do
+    [[ -f "$config_file" ]] && source "$config_file"
+done
+
+# Load personal overrides
+[[ -f "/Users/kkusama/.zshrc.mine" ]] && source "/Users/kkusama/.zshrc.mine"
+
+#-------------------
+# External Tool Integrations
+#-------------------
+# FZF setup
+if command -v fzf &> /dev/null; then
+    export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+    export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
+    
+    # Source FZF key bindings
+    [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+    [[ -f /usr/share/fzf/key-bindings.zsh ]] && source /usr/share/fzf/key-bindings.zsh
+    [[ -f /usr/share/fzf/completion.zsh ]] && source /usr/share/fzf/completion.zsh
+fi
+
+# kubectl completion
+command -v kubectl &> /dev/null && source <(kubectl completion zsh)
+
+# Terminal-specific configuration
+if [[ "$TERM_PROGRAM" == "ghostty" ]]; then
+    export TERM=xterm-256color
+fi
+
+#-------------------
+# Development Tools
+#-------------------
+# SDKMAN
+export SDKMAN_DIR="/Users/kkusama/.sdkman"
+[[ -s "/Users/kkusama/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/kkusama/.sdkman/bin/sdkman-init.sh"
+
+# Google Cloud SDK
+[[ -f '/private/tmp/google-cloud-sdk/path.zsh.inc' ]] && source '/private/tmp/google-cloud-sdk/path.zsh.inc'
+[[ -f '/private/tmp/google-cloud-sdk/completion.zsh.inc' ]] && source '/private/tmp/google-cloud-sdk/completion.zsh.inc'
+
+# Windsurf/Codeium
+[[ -d "/Users/kkusama/.codeium/windsurf/bin" ]] && export PATH="/Users/kkusama/.codeium/windsurf/bin:$PATH"
+
+#-------------------
+# Colors and Visual
+#-------------------
+export LSCOLORS=gxfxcxdxbxegedabagacad
+export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+
+# Terminal title
+precmd() {
+    echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
+}
+
+# Performance: show startup time (uncomment for debugging)
+# zprof

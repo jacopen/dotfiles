@@ -16,6 +16,7 @@ DRY_RUN=false
 VERBOSE=false
 INSTALL_TOOLS=false
 TOOLS_ONLY=false
+USE_MODERN_ZSH=false
 
 # Colors for output
 RED='\033[0;31m'
@@ -467,6 +468,7 @@ OPTIONS:
     -t, --install-tools         Install complete development environment (build tools, dev packages, modern tools)
     --skip-tools                Skip tools installation (default)
     --tools-only                Only install tools, skip dotfiles setup
+    --modern-zsh                Use modern Zinit-based .zshrc instead of legacy version
     --dry-run                   Show what would be done without making changes
     -v, --verbose               Verbose output
     --help                      Show this help message
@@ -529,6 +531,10 @@ while [[ $# -gt 0 ]]; do
             TOOLS_ONLY=true
             shift
             ;;
+        --modern-zsh)
+            USE_MODERN_ZSH=true
+            shift
+            ;;
         --dry-run)
             DRY_RUN=true
             shift
@@ -565,6 +571,7 @@ echo "  OS Type:      $OS_TYPE"
 echo "  Shell Type:   $SHELL_TYPE"
 echo "  Install Tools: $INSTALL_TOOLS"
 echo "  Tools Only:   $TOOLS_ONLY"
+echo "  Modern Zsh:   $USE_MODERN_ZSH"
 echo "  Dry Run:      $DRY_RUN"
 
 if [[ "$DRY_RUN" == "true" ]]; then
@@ -673,6 +680,9 @@ main() {
         process_template "$TEMPLATES_DIR/zsh_pipx.template" "$SCRIPT_DIR/zsh/pipx"
         process_template "$TEMPLATES_DIR/zsh_android.template" "$SCRIPT_DIR/zsh/android"
         
+        # Generate modern .zshrc with Zinit
+        process_template "$TEMPLATES_DIR/.zshrc.template" "$SCRIPT_DIR/.zshrc_modern"
+        
         # Generate config file
         process_template "$SCRIPT_DIR/config.template.json" "$SCRIPT_DIR/config.json"
         
@@ -682,7 +692,15 @@ main() {
         create_symlink "$SCRIPT_DIR/.vimrc" "$HOME_DIR/.vimrc"
         create_symlink "$SCRIPT_DIR/.screenrc" "$HOME_DIR/.screenrc"
         create_symlink "$SCRIPT_DIR/.zshenv" "$HOME_DIR/.zshenv"
-        create_symlink "$SCRIPT_DIR/.zshrc" "$HOME_DIR/.zshrc"
+        
+        # Choose between modern Zinit-based .zshrc or legacy version
+        if [[ "$USE_MODERN_ZSH" == "true" ]]; then
+            create_symlink "$SCRIPT_DIR/.zshrc_modern" "$HOME_DIR/.zshrc"
+            log_info "Using modern Zinit-based .zshrc"
+        else
+            create_symlink "$SCRIPT_DIR/.zshrc" "$HOME_DIR/.zshrc"
+            log_info "Using legacy .zshrc (use --modern-zsh for Zinit version)"
+        fi
         create_symlink "$SCRIPT_DIR/.vim" "$HOME_DIR/.vim"
         create_symlink "$SCRIPT_DIR/.byobu" "$HOME_DIR/.byobu"
         create_symlink "$SCRIPT_DIR/.gitconfig" "$HOME_DIR/.gitconfig"
