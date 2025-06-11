@@ -8,7 +8,8 @@ return {
 
   -- == Examples of Adding Plugins ==
 
-  "andweeb/presence.nvim",
+  -- Discord presence disabled due to connection issues
+  { "andweeb/presence.nvim", enabled = false },
   {
     "ray-x/lsp_signature.nvim",
     event = "BufRead",
