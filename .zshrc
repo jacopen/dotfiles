@@ -317,14 +317,28 @@ do
   source ${HOME}/dotfiles/zsh/${filepath}
 done
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/jacopen/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/jacopen/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/jacopen/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/jacopen/google-cloud-sdk/completion.zsh.inc'; fi
-
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/Users/jacopen/.sdkman"
-[[ -s "/Users/jacopen/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/jacopen/.sdkman/bin/sdkman-init.sh"
+export SDKMAN_DIR="/Users/kkusama/.sdkman"
+[[ -s "/Users/kkusama/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/kkusama/.sdkman/bin/sdkman-init.sh"
 
 source <(kubectl completion zsh)
+
+if [[ "$TERM_PROGRAM" == "ghostty" ]]; then
+    export TERM=xterm-256color
+fi
+
+# Added by Windsurf
+export PATH="/Users/kkusama/.codeium/windsurf/bin:$PATH"
+
+# Android SDK
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH=~/.npm-global/bin:$PATH
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/private/tmp/google-cloud-sdk/path.zsh.inc' ]; then . '/private/tmp/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/private/tmp/google-cloud-sdk/completion.zsh.inc' ]; then . '/private/tmp/google-cloud-sdk/completion.zsh.inc'; fi

@@ -1,2 +1,5 @@
-export PATH="$HOME/.rbenv/bin:$PATH"
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+# assuming that rbenv was installed to `~/.rbenv`
+FPATH=~/.rbenv/completions:"$FPATH"
+
+autoload -U compinit
+compinit
