@@ -14,6 +14,8 @@ OS_TYPE="$(uname -s | tr '[:upper:]' '[:lower:]')"
 SHELL_TYPE="zsh"
 DRY_RUN=false
 VERBOSE=false
+INSTALL_TOOLS=false
+TOOLS_ONLY=false
 
 # Colors for output
 RED='\033[0;31m'
@@ -27,6 +29,264 @@ log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 log_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
+# Package manager detection and tools installation functions
+detect_package_manager() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        if command -v brew &> /dev/null; then
+            echo "brew"
+        else
+            echo "brew-missing"
+        fi
+    elif command -v apt &> /dev/null; then
+        echo "apt"
+    elif command -v dnf &> /dev/null; then
+        echo "dnf"
+    elif command -v yum &> /dev/null; then
+        echo "yum"
+    else
+        echo "unsupported"
+    fi
+}
+
+install_homebrew_first() {
+    log_info "Homebrew not found. Installing Homebrew first..."
+    if [[ "$DRY_RUN" == "false" ]]; then
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        # Add Homebrew to PATH for this session
+        if [[ -x "/opt/homebrew/bin/brew" ]]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        elif [[ -x "/usr/local/bin/brew" ]]; then
+            eval "$(/usr/local/bin/brew shellenv)"
+        fi
+        log_success "Homebrew installed successfully"
+    else
+        log_info "Would install Homebrew"
+    fi
+}
+
+# Modern tools configuration
+MODERN_TOOLS=("bat" "fd" "ripgrep" "fzf" "jq")
+OPTIONAL_TOOLS=("eza" "gh")
+
+# Package name mapping function
+get_package_name() {
+    local tool="$1"
+    local pkg_manager="$2"
+    
+    case "${tool}_${pkg_manager}" in
+        "bat_brew") echo "bat" ;;
+        "bat_apt") echo "bat" ;;
+        "bat_yum") echo "bat" ;;
+        "bat_dnf") echo "bat" ;;
+        
+        "fd_brew") echo "fd" ;;
+        "fd_apt") echo "fd-find" ;;
+        "fd_yum") echo "fd-find" ;;
+        "fd_dnf") echo "fd-find" ;;
+        
+        "ripgrep_brew") echo "ripgrep" ;;
+        "ripgrep_apt") echo "ripgrep" ;;
+        "ripgrep_yum") echo "ripgrep" ;;
+        "ripgrep_dnf") echo "ripgrep" ;;
+        
+        "fzf_brew") echo "fzf" ;;
+        "fzf_apt") echo "fzf" ;;
+        "fzf_yum") echo "fzf" ;;
+        "fzf_dnf") echo "fzf" ;;
+        
+        "jq_brew") echo "jq" ;;
+        "jq_apt") echo "jq" ;;
+        "jq_yum") echo "jq" ;;
+        "jq_dnf") echo "jq" ;;
+        
+        "eza_brew") echo "eza" ;;
+        "eza_apt") echo "eza" ;;
+        "eza_dnf") echo "eza" ;;
+        
+        "gh_brew") echo "gh" ;;
+        "gh_apt") echo "gh" ;;
+        "gh_dnf") echo "gh" ;;
+        
+        *) echo "" ;;
+    esac
+}
+
+update_package_manager() {
+    local pkg_manager="$1"
+    
+    if [[ "$DRY_RUN" == "false" ]]; then
+        case "$pkg_manager" in
+            "apt")
+                log_info "Updating apt package list..."
+                sudo apt update
+                ;;
+            "yum"|"dnf")
+                log_info "Package manager $pkg_manager ready"
+                ;;
+            "brew")
+                log_info "Updating Homebrew..."
+                brew update
+                ;;
+        esac
+    else
+        log_info "Would update $pkg_manager package manager"
+    fi
+}
+
+install_single_tool() {
+    local tool="$1"
+    local pkg_manager="$2"
+    local optional="${3:-false}"
+    
+    local package_name="$(get_package_name "$tool" "$pkg_manager")"
+    
+    if [[ -z "$package_name" ]]; then
+        if [[ "$optional" != "optional" ]]; then
+            log_warning "Tool '$tool' not available for $pkg_manager"
+        fi
+        return 1
+    fi
+    
+    # Check if already installed
+    local cmd_name="$tool"
+    if [[ "$tool" == "ripgrep" ]]; then
+        cmd_name="rg"
+    elif [[ "$tool" == "fd" && "$pkg_manager" == "apt" ]]; then
+        cmd_name="fdfind"
+    fi
+    
+    if command -v "$cmd_name" &> /dev/null; then
+        log_info "Tool '$tool' already installed, skipping"
+        return 0
+    fi
+    
+    if [[ "$DRY_RUN" == "false" ]]; then
+        case "$pkg_manager" in
+            "brew")
+                brew install "$package_name" || log_warning "Failed to install $tool"
+                ;;
+            "apt")
+                sudo apt install -y "$package_name" || log_warning "Failed to install $tool"
+                ;;
+            "yum")
+                sudo yum install -y "$package_name" || log_warning "Failed to install $tool"
+                ;;
+            "dnf")
+                sudo dnf install -y "$package_name" || log_warning "Failed to install $tool"
+                ;;
+        esac
+        
+        if command -v "$cmd_name" &> /dev/null; then
+            log_success "Installed: $tool"
+        else
+            log_warning "Installation may have failed: $tool"
+        fi
+    else
+        log_info "Would install: $tool ($package_name) via $pkg_manager"
+    fi
+}
+
+install_modern_tools() {
+    local pkg_manager="$(detect_package_manager)"
+    
+    log_info "Installing modern tools for $OS_TYPE using $pkg_manager..."
+    
+    case "$pkg_manager" in
+        "brew-missing")
+            install_homebrew_first
+            pkg_manager="brew"
+            ;;
+        "unsupported")
+            log_error "Unsupported OS. Supported: macOS, Ubuntu/Debian, CentOS/RHEL"
+            return 1
+            ;;
+    esac
+    
+    # Update package manager first
+    update_package_manager "$pkg_manager"
+    
+    # Install core tools
+    for tool in "${MODERN_TOOLS[@]}"; do
+        install_single_tool "$tool" "$pkg_manager"
+    done
+    
+    # Install optional tools
+    for tool in "${OPTIONAL_TOOLS[@]}"; do
+        install_single_tool "$tool" "$pkg_manager" "optional"
+    done
+    
+    log_success "Modern tools installation completed!"
+}
+
+setup_modern_aliases() {
+    local aliases_file="$SCRIPT_DIR/zsh/modern-aliases"
+    
+    log_info "Setting up modern tool aliases..."
+    
+    if [[ "$DRY_RUN" == "false" ]]; then
+        # Create modern aliases file
+        cat > "$aliases_file" << 'EOF'
+# Modern tool aliases (auto-generated)
+# Generated by install.sh
+
+# Enhanced cat with syntax highlighting
+if command -v bat &> /dev/null; then
+    alias cat='bat'
+    alias catp='bat --paging=never'
+fi
+
+# Enhanced ls with git info and icons
+if command -v eza &> /dev/null; then
+    alias ls='eza'
+    alias ll='eza -la --git'
+    alias tree='eza --tree'
+elif command -v exa &> /dev/null; then
+    alias ls='exa'
+    alias ll='exa -la --git'
+    alias tree='exa --tree'
+fi
+
+# Enhanced find
+if command -v fd &> /dev/null; then
+    alias find='fd'
+elif command -v fdfind &> /dev/null; then
+    alias find='fdfind'
+    alias fd='fdfind'
+fi
+
+# Enhanced grep
+if command -v rg &> /dev/null; then
+    alias grep='rg'
+fi
+
+# FZF integration
+if command -v fzf &> /dev/null; then
+    # Ctrl+R for command history search
+    export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
+    
+    # Setup fzf key bindings and completions if available
+    if [[ -f ~/.fzf.zsh ]]; then
+        source ~/.fzf.zsh
+    elif [[ -f /usr/share/fzf/key-bindings.zsh ]]; then
+        source /usr/share/fzf/key-bindings.zsh
+        source /usr/share/fzf/completion.zsh
+    fi
+fi
+
+# GitHub CLI shortcuts
+if command -v gh &> /dev/null; then
+    alias ghpr='gh pr create'
+    alias ghpv='gh pr view'
+    alias ghis='gh issue create'
+    alias ghiv='gh issue view'
+fi
+EOF
+        log_success "Modern aliases configured: $aliases_file"
+    else
+        log_info "Would create modern aliases file: $aliases_file"
+    fi
+}
 
 # Help function
 show_help() {
@@ -42,6 +302,9 @@ OPTIONS:
     -h, --home-dir PATH         Home directory path (default: \$HOME)
     -o, --os-type TYPE          OS type: linux, darwin, etc. (default: auto-detected)
     -s, --shell-type SHELL      Shell type: zsh, bash (default: zsh)
+    -t, --install-tools         Install modern development tools (bat, fd, ripgrep, fzf, jq, eza, gh)
+    --skip-tools                Skip tools installation (default)
+    --tools-only                Only install tools, skip dotfiles setup
     --dry-run                   Show what would be done without making changes
     -v, --verbose               Verbose output
     --help                      Show this help message
@@ -50,14 +313,20 @@ EXAMPLES:
     # Basic installation with auto-detection
     ./install.sh
 
-    # Custom user and email
-    ./install.sh --user-name "John Doe" --user-email "john@example.com"
+    # Install with modern development tools
+    ./install.sh --install-tools
 
-    # Linux environment
-    ./install.sh --user-name "Ubuntu User" --home-dir "/home/ubuntu"
+    # Custom user and email with tools
+    ./install.sh --user-name "John Doe" --user-email "john@example.com" --install-tools
+
+    # Linux environment with tools
+    ./install.sh --user-name "Ubuntu User" --home-dir "/home/ubuntu" --install-tools
+
+    # Install only tools, skip dotfiles
+    ./install.sh --tools-only
 
     # Dry run to see what would be done
-    ./install.sh --dry-run
+    ./install.sh --install-tools --dry-run
 
 EOF
 }
@@ -84,6 +353,19 @@ while [[ $# -gt 0 ]]; do
         -s|--shell-type)
             SHELL_TYPE="$2"
             shift 2
+            ;;
+        -t|--install-tools)
+            INSTALL_TOOLS=true
+            shift
+            ;;
+        --skip-tools)
+            INSTALL_TOOLS=false
+            shift
+            ;;
+        --tools-only)
+            INSTALL_TOOLS=true
+            TOOLS_ONLY=true
+            shift
             ;;
         --dry-run)
             DRY_RUN=true
@@ -119,6 +401,8 @@ echo "  User Email:   $USER_EMAIL"
 echo "  Home Dir:     $HOME_DIR"
 echo "  OS Type:      $OS_TYPE"
 echo "  Shell Type:   $SHELL_TYPE"
+echo "  Install Tools: $INSTALL_TOOLS"
+echo "  Tools Only:   $TOOLS_ONLY"
 echo "  Dry Run:      $DRY_RUN"
 
 if [[ "$DRY_RUN" == "true" ]]; then
@@ -204,49 +488,71 @@ create_symlink() {
 
 # Main installation process
 main() {
-    log_info "Starting dotfiles installation..."
+    log_info "Starting installation..."
     
-    # Update git submodules
-    if [[ "$DRY_RUN" == "false" ]]; then
-        git submodule update --init --recursive
-        log_success "Updated git submodules"
-    else
-        log_info "Would update git submodules"
+    if [[ "$TOOLS_ONLY" != "true" ]]; then
+        log_info "Setting up dotfiles..."
+        
+        # Update git submodules
+        if [[ "$DRY_RUN" == "false" ]]; then
+            git submodule update --init --recursive
+            log_success "Updated git submodules"
+        else
+            log_info "Would update git submodules"
+        fi
+        
+        # Process templates
+        log_info "Processing templates..."
+        
+        # Generate .gitconfig from template
+        process_template "$TEMPLATES_DIR/.gitconfig.template" "$SCRIPT_DIR/.gitconfig"
+        
+        # Generate zsh configuration files
+        process_template "$TEMPLATES_DIR/zsh_pipx.template" "$SCRIPT_DIR/zsh/pipx"
+        process_template "$TEMPLATES_DIR/zsh_android.template" "$SCRIPT_DIR/zsh/android"
+        
+        # Generate config file
+        process_template "$SCRIPT_DIR/config.template.json" "$SCRIPT_DIR/config.json"
+        
+        # Create symlinks
+        log_info "Creating symlinks..."
+        
+        create_symlink "$SCRIPT_DIR/.vimrc" "$HOME_DIR/.vimrc"
+        create_symlink "$SCRIPT_DIR/.screenrc" "$HOME_DIR/.screenrc"
+        create_symlink "$SCRIPT_DIR/.zshenv" "$HOME_DIR/.zshenv"
+        create_symlink "$SCRIPT_DIR/.zshrc" "$HOME_DIR/.zshrc"
+        create_symlink "$SCRIPT_DIR/.vim" "$HOME_DIR/.vim"
+        create_symlink "$SCRIPT_DIR/.byobu" "$HOME_DIR/.byobu"
+        create_symlink "$SCRIPT_DIR/.gitconfig" "$HOME_DIR/.gitconfig"
+        create_symlink "$SCRIPT_DIR/.tmux.conf" "$HOME_DIR/.tmux.conf"
+        create_symlink "$SCRIPT_DIR/nvim" "$HOME_DIR/.config/nvim"
+        
+        # SSH config (if exists)
+        if [[ -f "$SCRIPT_DIR/private/.ssh_config" ]]; then
+            create_symlink "$SCRIPT_DIR/private/.ssh_config" "$HOME_DIR/.ssh/config"
+        fi
+        
+        log_success "Dotfiles setup completed!"
     fi
     
-    # Process templates
-    log_info "Processing templates..."
-    
-    # Generate .gitconfig from template
-    process_template "$TEMPLATES_DIR/.gitconfig.template" "$SCRIPT_DIR/.gitconfig"
-    
-    # Generate zsh configuration files
-    process_template "$TEMPLATES_DIR/zsh_pipx.template" "$SCRIPT_DIR/zsh/pipx"
-    process_template "$TEMPLATES_DIR/zsh_android.template" "$SCRIPT_DIR/zsh/android"
-    
-    # Generate config file
-    process_template "$SCRIPT_DIR/config.template.json" "$SCRIPT_DIR/config.json"
-    
-    # Create symlinks
-    log_info "Creating symlinks..."
-    
-    create_symlink "$SCRIPT_DIR/.vimrc" "$HOME_DIR/.vimrc"
-    create_symlink "$SCRIPT_DIR/.screenrc" "$HOME_DIR/.screenrc"
-    create_symlink "$SCRIPT_DIR/.zshenv" "$HOME_DIR/.zshenv"
-    create_symlink "$SCRIPT_DIR/.zshrc" "$HOME_DIR/.zshrc"
-    create_symlink "$SCRIPT_DIR/.vim" "$HOME_DIR/.vim"
-    create_symlink "$SCRIPT_DIR/.byobu" "$HOME_DIR/.byobu"
-    create_symlink "$SCRIPT_DIR/.gitconfig" "$HOME_DIR/.gitconfig"
-    create_symlink "$SCRIPT_DIR/.tmux.conf" "$HOME_DIR/.tmux.conf"
-    create_symlink "$SCRIPT_DIR/nvim" "$HOME_DIR/.config/nvim"
-    
-    # SSH config (if exists)
-    if [[ -f "$SCRIPT_DIR/private/.ssh_config" ]]; then
-        create_symlink "$SCRIPT_DIR/private/.ssh_config" "$HOME_DIR/.ssh/config"
+    # Install modern tools if requested
+    if [[ "$INSTALL_TOOLS" == "true" ]]; then
+        log_info "Installing modern development tools..."
+        install_modern_tools
+        setup_modern_aliases
     fi
     
-    log_success "Dotfiles installation completed!"
+    log_success "Installation completed!"
     log_info "Configuration saved to: $SCRIPT_DIR/config.json"
+    
+    if [[ "$INSTALL_TOOLS" == "true" ]]; then
+        log_info "Modern tools installed. New aliases available:"
+        log_info "  cat -> bat (syntax highlighting)"
+        log_info "  ls -> eza (git info, icons)"
+        log_info "  find -> fd (fast search)"
+        log_info "  grep -> rg (fast grep)"
+        log_info "  + fzf, jq, gh integration"
+    fi
     
     if [[ "$DRY_RUN" == "false" ]]; then
         log_info "Please restart your shell or run: source $HOME_DIR/.zshrc"

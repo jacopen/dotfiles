@@ -1,0 +1,16 @@
+{
+  "user": {
+    "name": "Kazuto Kusama",
+    "email": "jacopen@gmail.com",
+    "home_dir": "/Users/kkusama"
+  },
+  "platform": {
+    "os": "darwin",
+    "shell": "zsh"
+  },
+  "paths": {
+    "android_sdk": "/Users/kkusama/Library/Android/sdk",
+    "local_bin": "/Users/kkusama/.local/bin",
+    "gitignore_global": "/Users/kkusama/.gitignore_global"
+  }
+}
