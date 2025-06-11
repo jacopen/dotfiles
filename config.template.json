@@ -1,0 +1,16 @@
+{
+  "user": {
+    "name": "{{USER_NAME}}",
+    "email": "{{USER_EMAIL}}",
+    "home_dir": "{{HOME_DIR}}"
+  },
+  "platform": {
+    "os": "{{OS_TYPE}}",
+    "shell": "{{SHELL_TYPE}}"
+  },
+  "paths": {
+    "android_sdk": "{{HOME_DIR}}/Library/Android/sdk",
+    "local_bin": "{{HOME_DIR}}/.local/bin",
+    "gitignore_global": "{{HOME_DIR}}/.gitignore_global"
+  }
+}
