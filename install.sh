@@ -68,7 +68,7 @@ install_homebrew_first() {
 
 # Modern tools configuration
 MODERN_TOOLS=("bat" "fd" "ripgrep" "fzf" "jq")
-OPTIONAL_TOOLS=("eza" "gh")
+OPTIONAL_TOOLS=("eza" "gh" "starship")
 
 # Development packages configuration
 DEV_PACKAGES=("git" "curl" "zip" "zsh" "tig" "dstat" "iotop" "nethogs" "pinfo" "htop" "colordiff" "wget" "neovim")
@@ -113,6 +113,11 @@ get_package_name() {
         "gh_brew") echo "gh" ;;
         "gh_apt") echo "gh" ;;
         "gh_dnf") echo "gh" ;;
+        
+        "starship_brew") echo "starship" ;;
+        "starship_apt") echo "" ;;  # Install via curl
+        "starship_yum") echo "" ;;  # Install via curl
+        "starship_dnf") echo "" ;;  # Install via curl
         
         # Development packages
         "git_brew") echo "git" ;;
@@ -278,12 +283,43 @@ install_build_tools() {
     esac
 }
 
+install_starship() {
+    if command -v starship &> /dev/null; then
+        log_info "Starship already installed, skipping"
+        return 0
+    fi
+    
+    if [[ "$DRY_RUN" == "false" ]]; then
+        log_info "Installing Starship via official installer..."
+        curl -sS https://starship.rs/install.sh | sh -s -- --yes
+        if command -v starship &> /dev/null; then
+            log_success "Installed: starship"
+        else
+            log_warning "Starship installation may have failed"
+        fi
+    else
+        log_info "Would install Starship via curl installer"
+    fi
+}
+
 install_single_tool() {
     local tool="$1"
     local pkg_manager="$2"
     local optional="${3:-false}"
     
-    local package_name="$(get_package_name "$tool" "$pkg_manager")"
+    # Special handling for Starship
+    if [[ "$tool" == "starship" ]]; then
+        if [[ "$pkg_manager" == "brew" ]]; then
+            # Use Homebrew on macOS
+            local package_name="starship"
+        else
+            # Use curl installer on other platforms
+            install_starship
+            return $?
+        fi
+    else
+        local package_name="$(get_package_name "$tool" "$pkg_manager")"
+    fi
     
     if [[ -z "$package_name" ]]; then
         if [[ "$optional" != "optional" ]]; then
@@ -399,13 +435,11 @@ if command -v bat &> /dev/null; then
     alias catp='bat --paging=never'
 fi
 
-# Enhanced ls with git info and icons
+# eza/exa available as separate commands (ls remains original)
 if command -v eza &> /dev/null; then
-    alias ls='eza'
     alias ll='eza -la --git'
     alias tree='eza --tree'
 elif command -v exa &> /dev/null; then
-    alias ls='exa'
     alias ll='exa -la --git'
     alias tree='exa --tree'
 fi
@@ -683,6 +717,9 @@ main() {
         # Generate modern .zshrc with Zinit
         process_template "$TEMPLATES_DIR/.zshrc.template" "$SCRIPT_DIR/.zshrc_modern"
         
+        # Generate Starship configuration
+        process_template "$TEMPLATES_DIR/starship.toml.template" "$SCRIPT_DIR/starship.toml"
+        
         # Generate config file
         process_template "$SCRIPT_DIR/config.template.json" "$SCRIPT_DIR/config.json"
         
@@ -707,6 +744,11 @@ main() {
         create_symlink "$SCRIPT_DIR/.tmux.conf" "$HOME_DIR/.tmux.conf"
         create_symlink "$SCRIPT_DIR/nvim" "$HOME_DIR/.config/nvim"
         
+        # Starship configuration (if using modern zsh)
+        if [[ "$USE_MODERN_ZSH" == "true" ]]; then
+            create_symlink "$SCRIPT_DIR/starship.toml" "$HOME_DIR/.config/starship.toml"
+        fi
+        
         # SSH config (if exists)
         if [[ -f "$SCRIPT_DIR/private/.ssh_config" ]]; then
             create_symlink "$SCRIPT_DIR/private/.ssh_config" "$HOME_DIR/.ssh/config"
@@ -730,7 +772,7 @@ main() {
         log_info "  • Build tools and development libraries"
         log_info "  • Essential packages: git, curl, zsh, neovim, htop, tig, etc."
         log_info "  • Modern tools: bat, fd, ripgrep, fzf, jq, eza, gh"
-        log_info "  • Enhanced aliases: cat->bat, ls->eza, find->fd, grep->rg"
+        log_info "  • Enhanced aliases: find->fd, grep->rg, plus ll->eza"
         log_info "  • Complete setup for Python, Ruby, Node.js development"
     fi
     
