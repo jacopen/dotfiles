@@ -425,11 +425,14 @@ install_modern_tools() {
 }
 
 setup_modern_aliases() {
-    local aliases_file="$SCRIPT_DIR/zsh/modern-aliases"
+    local aliases_file="$GENERATED_DIR/zsh/modern-aliases"
     
     log_info "Setting up modern tool aliases..."
     
     if [[ "$DRY_RUN" == "false" ]]; then
+        # Ensure generated zsh directory exists
+        mkdir -p "$GENERATED_DIR/zsh"
+        
         # Create modern aliases file
         cat > "$aliases_file" << 'EOF'
 # Modern tool aliases (auto-generated)
@@ -621,6 +624,20 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMPLATES_DIR="$SCRIPT_DIR/templates"
 
+# External generation directory (XDG-compliant)
+GENERATED_DIR="${XDG_CONFIG_HOME:-$HOME_DIR/.config}/dotfiles/generated"
+
+# Create generation directory
+create_generated_dir() {
+    if [[ "$DRY_RUN" == "false" ]]; then
+        mkdir -p "$GENERATED_DIR"
+        mkdir -p "$GENERATED_DIR/zsh"
+        log_success "Created generation directory: $GENERATED_DIR"
+    else
+        log_info "Would create generation directory: $GENERATED_DIR"
+    fi
+}
+
 # Template processing function
 process_template() {
     local template_file="$1"
@@ -635,20 +652,21 @@ process_template() {
         log_info "Processing template: $template_file -> $output_file"
     fi
     
-    # Use sed to replace placeholders
-    sed -e "s|{{USER_NAME}}|$USER_NAME|g" \
-        -e "s|{{USER_EMAIL}}|$USER_EMAIL|g" \
-        -e "s|{{HOME_DIR}}|$HOME_DIR|g" \
-        -e "s|{{OS_TYPE}}|$OS_TYPE|g" \
-        -e "s|{{SHELL_TYPE}}|$SHELL_TYPE|g" \
-        "$template_file" > "$output_file.tmp"
-    
     if [[ "$DRY_RUN" == "false" ]]; then
-        mv "$output_file.tmp" "$output_file"
+        # Ensure output directory exists
+        local output_dir="$(dirname "$output_file")"
+        mkdir -p "$output_dir"
+        
+        # Use sed to replace placeholders
+        sed -e "s|{{USER_NAME}}|$USER_NAME|g" \
+            -e "s|{{USER_EMAIL}}|$USER_EMAIL|g" \
+            -e "s|{{HOME_DIR}}|$HOME_DIR|g" \
+            -e "s|{{OS_TYPE}}|$OS_TYPE|g" \
+            -e "s|{{SHELL_TYPE}}|$SHELL_TYPE|g" \
+            "$template_file" > "$output_file"
         log_success "Generated: $output_file"
     else
         log_info "Would generate: $output_file"
-        rm "$output_file.tmp"
     fi
 }
 
@@ -709,49 +727,53 @@ main() {
             log_info "Would update git submodules"
         fi
         
-        # Process templates
-        log_info "Processing templates..."
+        # Create generation directory
+        create_generated_dir
+        
+        # Process templates to external directory
+        log_info "Processing templates to external directory..."
         
         # Generate .gitconfig from template
-        process_template "$TEMPLATES_DIR/.gitconfig.template" "$SCRIPT_DIR/.gitconfig"
+        process_template "$TEMPLATES_DIR/.gitconfig.template" "$GENERATED_DIR/.gitconfig"
         
         # Generate zsh configuration files
-        process_template "$TEMPLATES_DIR/zsh_pipx.template" "$SCRIPT_DIR/zsh/pipx"
-        process_template "$TEMPLATES_DIR/zsh_android.template" "$SCRIPT_DIR/zsh/android"
+        process_template "$TEMPLATES_DIR/zsh_pipx.template" "$GENERATED_DIR/zsh/pipx"
+        process_template "$TEMPLATES_DIR/zsh_android.template" "$GENERATED_DIR/zsh/android"
         
         # Generate modern .zshrc with Zinit
-        process_template "$TEMPLATES_DIR/.zshrc.template" "$SCRIPT_DIR/.zshrc_modern"
+        process_template "$TEMPLATES_DIR/.zshrc.template" "$GENERATED_DIR/.zshrc_modern"
         
         # Generate Starship configuration
-        process_template "$TEMPLATES_DIR/starship.toml.template" "$SCRIPT_DIR/starship.toml"
+        process_template "$TEMPLATES_DIR/starship.toml.template" "$GENERATED_DIR/starship.toml"
         
         # Generate config file
-        process_template "$SCRIPT_DIR/config.template.json" "$SCRIPT_DIR/config.json"
+        process_template "$SCRIPT_DIR/config.template.json" "$GENERATED_DIR/config.json"
         
         # Create symlinks
         log_info "Creating symlinks..."
         
+        # Create symlinks for static files (from repository)
         create_symlink "$SCRIPT_DIR/.vimrc" "$HOME_DIR/.vimrc"
         create_symlink "$SCRIPT_DIR/.screenrc" "$HOME_DIR/.screenrc"
         create_symlink "$SCRIPT_DIR/.zshenv" "$HOME_DIR/.zshenv"
-        
-        # Choose between modern Zinit-based .zshrc or legacy version
-        if [[ "$USE_MODERN_ZSH" == "true" ]]; then
-            create_symlink "$SCRIPT_DIR/.zshrc_modern" "$HOME_DIR/.zshrc"
-            log_info "Using modern Zinit-based .zshrc"
-        else
-            create_symlink "$SCRIPT_DIR/.zshrc" "$HOME_DIR/.zshrc"
-            log_info "Using legacy .zshrc (use --modern-zsh for Zinit version)"
-        fi
         create_symlink "$SCRIPT_DIR/.vim" "$HOME_DIR/.vim"
         create_symlink "$SCRIPT_DIR/.byobu" "$HOME_DIR/.byobu"
-        create_symlink "$SCRIPT_DIR/.gitconfig" "$HOME_DIR/.gitconfig"
         create_symlink "$SCRIPT_DIR/.tmux.conf" "$HOME_DIR/.tmux.conf"
         create_symlink "$SCRIPT_DIR/nvim" "$HOME_DIR/.config/nvim"
         
-        # Starship configuration (if using modern zsh)
+        # Create symlinks for generated files (from external directory)
+        create_symlink "$GENERATED_DIR/.gitconfig" "$HOME_DIR/.gitconfig"
+        
+        # Choose between modern Zinit-based .zshrc or legacy version
         if [[ "$USE_MODERN_ZSH" == "true" ]]; then
-            create_symlink "$SCRIPT_DIR/starship.toml" "$HOME_DIR/.config/starship.toml"
+            create_symlink "$GENERATED_DIR/.zshrc_modern" "$HOME_DIR/.zshrc"
+            log_info "Using modern Zinit-based .zshrc (generated)"
+            
+            # Starship configuration for modern zsh
+            create_symlink "$GENERATED_DIR/starship.toml" "$HOME_DIR/.config/starship.toml"
+        else
+            create_symlink "$SCRIPT_DIR/.zshrc" "$HOME_DIR/.zshrc"
+            log_info "Using legacy .zshrc (use --modern-zsh for Zinit version)"
         fi
         
         # SSH config (if exists)
@@ -770,7 +792,7 @@ main() {
     fi
     
     log_success "Installation completed!"
-    log_info "Configuration saved to: $SCRIPT_DIR/config.json"
+    log_info "Configuration saved to: $GENERATED_DIR/config.json"
     
     if [[ "$INSTALL_TOOLS" == "true" ]]; then
         log_info "Development environment installed. Includes:"

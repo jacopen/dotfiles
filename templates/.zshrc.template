@@ -121,8 +121,9 @@ zstyle ':completion:*:warnings' format 'No matches found'
 #-------------------
 # Modern Tool Aliases
 #-------------------
-# Load modern aliases if available
-[[ -f "{{HOME_DIR}}/dotfiles/zsh/modern-aliases" ]] && source "{{HOME_DIR}}/dotfiles/zsh/modern-aliases"
+# Load modern aliases from generated directory
+GENERATED_ALIASES="${XDG_CONFIG_HOME:-{{HOME_DIR}}/.config}/dotfiles/generated/zsh/modern-aliases"
+[[ -f "$GENERATED_ALIASES" ]] && source "$GENERATED_ALIASES"
 
 #-------------------
 # Traditional Aliases (preserved from original)
@@ -153,8 +154,15 @@ alias su="su -l"
 #-------------------
 # External Configuration Loading
 #-------------------
-# Load dotfiles zsh configurations
+# Load dotfiles zsh configurations (static files from repository)
 for config_file in {{HOME_DIR}}/dotfiles/zsh/*(N); do
+    # Skip generated files (they should be in generated directory)
+    [[ -f "$config_file" ]] && [[ ! "$config_file" =~ "(pipx|android|modern-aliases)$" ]] && source "$config_file"
+done
+
+# Load generated zsh configurations
+GENERATED_ZSH_DIR="${XDG_CONFIG_HOME:-{{HOME_DIR}}/.config}/dotfiles/generated/zsh"
+for config_file in "$GENERATED_ZSH_DIR"/* "$GENERATED_ZSH_DIR"/.*(N); do
     [[ -f "$config_file" ]] && source "$config_file"
 done
 
