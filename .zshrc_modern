@@ -177,6 +177,11 @@ fi
 # kubectl completion
 command -v kubectl &> /dev/null && source <(kubectl completion zsh)
 
+# direnv integration
+if command -v direnv &> /dev/null; then
+    eval "$(direnv hook zsh)"
+fi
+
 # Terminal-specific configuration
 if [[ "$TERM_PROGRAM" == "ghostty" ]]; then
     export TERM=xterm-256color

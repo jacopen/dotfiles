@@ -67,7 +67,7 @@ install_homebrew_first() {
 }
 
 # Modern tools configuration
-MODERN_TOOLS=("bat" "fd" "ripgrep" "fzf" "jq")
+MODERN_TOOLS=("bat" "fd" "ripgrep" "fzf" "jq" "direnv")
 OPTIONAL_TOOLS=("eza" "gh" "starship")
 
 # Development packages configuration
@@ -105,6 +105,11 @@ get_package_name() {
         "jq_apt") echo "jq" ;;
         "jq_yum") echo "jq" ;;
         "jq_dnf") echo "jq" ;;
+        
+        "direnv_brew") echo "direnv" ;;
+        "direnv_apt") echo "direnv" ;;
+        "direnv_yum") echo "direnv" ;;
+        "direnv_dnf") echo "direnv" ;;
         
         "eza_brew") echo "eza" ;;
         "eza_apt") echo "eza" ;;
@@ -771,7 +776,7 @@ main() {
         log_info "Development environment installed. Includes:"
         log_info "  • Build tools and development libraries"
         log_info "  • Essential packages: git, curl, zsh, neovim, htop, tig, etc."
-        log_info "  • Modern tools: bat, fd, ripgrep, fzf, jq, eza, gh"
+        log_info "  • Modern tools: bat, fd, ripgrep, fzf, jq, direnv, eza, gh"
         log_info "  • Enhanced aliases: find->fd, grep->rg, plus ll->eza"
         log_info "  • Complete setup for Python, Ruby, Node.js development"
     fi
