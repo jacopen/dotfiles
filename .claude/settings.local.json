@@ -3,7 +3,8 @@
     "allow": [
       "Bash(git add:*)",
       "Bash(chmod:*)",
-      "Bash(./install.sh:*)"
+      "Bash(./install.sh:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }

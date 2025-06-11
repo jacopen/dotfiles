@@ -10,8 +10,14 @@ This is a personal dotfiles repository for macOS development environment setup. 
 
 ### Initial Setup
 ```bash
-# Install dotfiles (backs up existing configs and creates symlinks)
-./symlink.sh
+# Install dotfiles with auto-detection
+./install.sh
+
+# Install for specific environment
+./install.sh --user-name "Your Name" --user-email "your@email.com"
+
+# Preview installation
+./install.sh --dry-run --verbose
 
 # Install essential development tools via Homebrew
 ./tools/homebrew.sh
@@ -29,7 +35,7 @@ nvim
 ## Architecture
 
 ### Installation System
-- `symlink.sh` - Main installation script that creates symbolic links from repository files to their expected locations in the home directory
+- `install.sh` - Main installation script with multi-environment support, template processing, and safe installation features
 - Backs up existing configurations with `.bak` extension before creating symlinks
 - Links configurations for vim, zsh, git, tmux, neovim, and SSH
 
@@ -51,7 +57,7 @@ nvim
 
 ## Important Files
 
-- `symlink.sh` - Primary installation script
+- `install.sh` - Primary installation script with multi-environment support
 - `nvim/init.lua` - Neovim bootstrap file
 - `nvim/lua/lazy_setup.lua` - Plugin manager configuration
 - `.zshrc` - Main shell configuration

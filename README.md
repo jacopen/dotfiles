@@ -102,7 +102,6 @@ The following files are dynamically generated from templates:
 ```
 dotfiles/
 ├── install.sh              # Main installation script
-├── symlink.sh              # Legacy symlink script
 ├── templates/              # Template files
 │   ├── .gitconfig.template
 │   ├── zsh_pipx.template
@@ -133,11 +132,15 @@ ls -la ~/.gitconfig.bak.*
 mv ~/.gitconfig.bak.20241201_123456 ~/.gitconfig
 ```
 
-## Legacy Installation
+## Migration from Legacy symlink.sh
 
-The old `symlink.sh` script is still available but deprecated:
+The old `symlink.sh` script has been removed. Use `install.sh` instead:
 ```bash
-./symlink.sh  # Legacy method (not recommended)
+# Old way (removed)
+# ./symlink.sh
+
+# New way
+./install.sh
 ```
 
 ## Contributing
