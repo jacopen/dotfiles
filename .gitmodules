@@ -1,9 +1,3 @@
 [submodule "private"]
 	path = private
-	url = git@bitbucket.org:jacopen/dotfiles_private.git
-[submodule "zsh-kubectl-prompt"]
-	path = zsh-kubectl-prompt
-	url = https://github.com/superbrothers/zsh-kubectl-prompt.git
-[submodule "kubectx"]
-	path = kubectx
-	url = https://github.com/ahmetb/kubectx.git
+	url = git@github.com:jacopen/dotfiles_private.git
