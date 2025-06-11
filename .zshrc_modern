@@ -27,6 +27,7 @@ export LC_ALL=en_US.UTF-8
 # Path configuration
 export PATH="/Users/kkusama/bin:$PATH"
 export PATH="/Users/kkusama/.local/bin:$PATH"
+export PATH="/Users/kkusama/.npm-global/bin:$PATH"
 
 # History configuration
 export HISTFILE="/Users/kkusama/.zsh_history"
