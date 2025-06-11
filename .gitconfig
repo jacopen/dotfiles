@@ -32,7 +32,7 @@
 [core]
   whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
 	editor = vim
-	excludesfile = /Users/jacopen/.gitignore_global
+	excludesfile = /Users/kkusama/.gitignore_global
 
 [alias]
   st = status
