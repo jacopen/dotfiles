@@ -69,6 +69,11 @@ install_homebrew_first() {
 MODERN_TOOLS=("bat" "fd" "ripgrep" "fzf" "jq")
 OPTIONAL_TOOLS=("eza" "gh")
 
+# Development packages configuration
+DEV_PACKAGES=("git" "curl" "zip" "zsh" "tig" "dstat" "iotop" "nethogs" "pinfo" "htop" "colordiff" "wget" "neovim")
+DEV_LIBRARIES=("zlib" "openssl" "readline" "bzip2" "sqlite" "llvm" "ncurses")
+BUILD_TOOLS=("build-essential")
+
 # Package name mapping function
 get_package_name() {
     local tool="$1"
@@ -108,6 +113,113 @@ get_package_name() {
         "gh_apt") echo "gh" ;;
         "gh_dnf") echo "gh" ;;
         
+        # Development packages
+        "git_brew") echo "git" ;;
+        "git_apt") echo "git" ;;
+        "git_yum") echo "git" ;;
+        "git_dnf") echo "git" ;;
+        
+        "curl_brew") echo "curl" ;;
+        "curl_apt") echo "curl" ;;
+        "curl_yum") echo "curl" ;;
+        "curl_dnf") echo "curl" ;;
+        
+        "zip_brew") echo "zip" ;;
+        "zip_apt") echo "zip" ;;
+        "zip_yum") echo "zip" ;;
+        "zip_dnf") echo "zip" ;;
+        
+        "zsh_brew") echo "zsh" ;;
+        "zsh_apt") echo "zsh" ;;
+        "zsh_yum") echo "zsh" ;;
+        "zsh_dnf") echo "zsh" ;;
+        
+        "tig_brew") echo "tig" ;;
+        "tig_apt") echo "tig" ;;
+        "tig_yum") echo "tig" ;;
+        "tig_dnf") echo "tig" ;;
+        
+        "dstat_brew") echo "dstat" ;;
+        "dstat_apt") echo "dstat" ;;
+        "dstat_yum") echo "dstat" ;;
+        "dstat_dnf") echo "dstat" ;;
+        
+        "iotop_brew") echo "iotop" ;;
+        "iotop_apt") echo "iotop" ;;
+        "iotop_yum") echo "iotop" ;;
+        "iotop_dnf") echo "iotop" ;;
+        
+        "nethogs_brew") echo "nethogs" ;;
+        "nethogs_apt") echo "nethogs" ;;
+        "nethogs_yum") echo "nethogs" ;;
+        "nethogs_dnf") echo "nethogs" ;;
+        
+        "pinfo_brew") echo "pinfo" ;;
+        "pinfo_apt") echo "pinfo" ;;
+        "pinfo_yum") echo "pinfo" ;;
+        "pinfo_dnf") echo "pinfo" ;;
+        
+        "htop_brew") echo "htop" ;;
+        "htop_apt") echo "htop" ;;
+        "htop_yum") echo "htop" ;;
+        "htop_dnf") echo "htop" ;;
+        
+        "colordiff_brew") echo "colordiff" ;;
+        "colordiff_apt") echo "colordiff" ;;
+        "colordiff_yum") echo "colordiff" ;;
+        "colordiff_dnf") echo "colordiff" ;;
+        
+        "wget_brew") echo "wget" ;;
+        "wget_apt") echo "wget" ;;
+        "wget_yum") echo "wget" ;;
+        "wget_dnf") echo "wget" ;;
+        
+        "neovim_brew") echo "neovim" ;;
+        "neovim_apt") echo "neovim" ;;
+        "neovim_yum") echo "neovim" ;;
+        "neovim_dnf") echo "neovim" ;;
+        
+        # Development libraries
+        "zlib_brew") echo "zlib" ;;
+        "zlib_apt") echo "zlib1g-dev" ;;
+        "zlib_yum") echo "zlib-devel" ;;
+        "zlib_dnf") echo "zlib-devel" ;;
+        
+        "openssl_brew") echo "openssl" ;;
+        "openssl_apt") echo "libssl-dev" ;;
+        "openssl_yum") echo "openssl-devel" ;;
+        "openssl_dnf") echo "openssl-devel" ;;
+        
+        "readline_brew") echo "readline" ;;
+        "readline_apt") echo "libreadline-dev" ;;
+        "readline_yum") echo "readline-devel" ;;
+        "readline_dnf") echo "readline-devel" ;;
+        
+        "bzip2_brew") echo "bzip2" ;;
+        "bzip2_apt") echo "libbz2-dev" ;;
+        "bzip2_yum") echo "bzip2-devel" ;;
+        "bzip2_dnf") echo "bzip2-devel" ;;
+        
+        "sqlite_brew") echo "sqlite" ;;
+        "sqlite_apt") echo "libsqlite3-dev" ;;
+        "sqlite_yum") echo "sqlite-devel" ;;
+        "sqlite_dnf") echo "sqlite-devel" ;;
+        
+        "llvm_brew") echo "llvm" ;;
+        "llvm_apt") echo "llvm" ;;
+        "llvm_yum") echo "llvm" ;;
+        "llvm_dnf") echo "llvm" ;;
+        
+        "ncurses_brew") echo "ncurses" ;;
+        "ncurses_apt") echo "libncurses5-dev libncursesw5-dev" ;;
+        "ncurses_yum") echo "ncurses-devel" ;;
+        "ncurses_dnf") echo "ncurses-devel" ;;
+        
+        # Build tools
+        "build-essential_apt") echo "build-essential" ;;
+        "build-essential_yum") echo "groupinstall Development Tools" ;;
+        "build-essential_dnf") echo "groupinstall Development Tools" ;;
+        
         *) echo "" ;;
     esac
 }
@@ -132,6 +244,37 @@ update_package_manager() {
     else
         log_info "Would update $pkg_manager package manager"
     fi
+}
+
+install_build_tools() {
+    local pkg_manager="$1"
+    
+    case "$pkg_manager" in
+        "apt")
+            if [[ "$DRY_RUN" == "false" ]]; then
+                sudo apt install -y build-essential || log_warning "Failed to install build-essential"
+            else
+                log_info "Would install: build-essential via apt"
+            fi
+            ;;
+        "yum")
+            if [[ "$DRY_RUN" == "false" ]]; then
+                sudo yum groupinstall -y "Development Tools" || log_warning "Failed to install Development Tools"
+            else
+                log_info "Would install: Development Tools group via yum"
+            fi
+            ;;
+        "dnf")
+            if [[ "$DRY_RUN" == "false" ]]; then
+                sudo dnf groupinstall -y "Development Tools" || log_warning "Failed to install Development Tools"
+            else
+                log_info "Would install: Development Tools group via dnf"
+            fi
+            ;;
+        "brew")
+            log_info "Build tools included with Xcode Command Line Tools on macOS"
+            ;;
+    esac
 }
 
 install_single_tool() {
@@ -206,17 +349,37 @@ install_modern_tools() {
     # Update package manager first
     update_package_manager "$pkg_manager"
     
-    # Install core tools
+    # Install build tools first (required for development)
+    if [[ "$pkg_manager" != "brew" ]]; then
+        log_info "Installing build tools..."
+        install_build_tools "$pkg_manager"
+    fi
+    
+    # Install development packages
+    log_info "Installing development packages..."
+    for package in "${DEV_PACKAGES[@]}"; do
+        install_single_tool "$package" "$pkg_manager"
+    done
+    
+    # Install development libraries
+    log_info "Installing development libraries..."
+    for library in "${DEV_LIBRARIES[@]}"; do
+        install_single_tool "$library" "$pkg_manager"
+    done
+    
+    # Install core modern tools
+    log_info "Installing modern tools..."
     for tool in "${MODERN_TOOLS[@]}"; do
         install_single_tool "$tool" "$pkg_manager"
     done
     
     # Install optional tools
+    log_info "Installing optional tools..."
     for tool in "${OPTIONAL_TOOLS[@]}"; do
         install_single_tool "$tool" "$pkg_manager" "optional"
     done
     
-    log_success "Modern tools installation completed!"
+    log_success "Development environment installation completed!"
 }
 
 setup_modern_aliases() {
@@ -302,7 +465,7 @@ OPTIONS:
     -h, --home-dir PATH         Home directory path (default: \$HOME)
     -o, --os-type TYPE          OS type: linux, darwin, etc. (default: auto-detected)
     -s, --shell-type SHELL      Shell type: zsh, bash (default: zsh)
-    -t, --install-tools         Install modern development tools (bat, fd, ripgrep, fzf, jq, eza, gh)
+    -t, --install-tools         Install complete development environment (build tools, dev packages, modern tools)
     --skip-tools                Skip tools installation (default)
     --tools-only                Only install tools, skip dotfiles setup
     --dry-run                   Show what would be done without making changes
@@ -313,19 +476,19 @@ EXAMPLES:
     # Basic installation with auto-detection
     ./install.sh
 
-    # Install with modern development tools
+    # Install with complete development environment
     ./install.sh --install-tools
 
-    # Custom user and email with tools
+    # Custom user and email with development environment
     ./install.sh --user-name "John Doe" --user-email "john@example.com" --install-tools
 
-    # Linux environment with tools
+    # Ubuntu environment with development packages
     ./install.sh --user-name "Ubuntu User" --home-dir "/home/ubuntu" --install-tools
 
-    # Install only tools, skip dotfiles
+    # Install only development environment, skip dotfiles
     ./install.sh --tools-only
 
-    # Dry run to see what would be done
+    # Dry run to see what would be installed
     ./install.sh --install-tools --dry-run
 
 EOF
@@ -546,12 +709,12 @@ main() {
     log_info "Configuration saved to: $SCRIPT_DIR/config.json"
     
     if [[ "$INSTALL_TOOLS" == "true" ]]; then
-        log_info "Modern tools installed. New aliases available:"
-        log_info "  cat -> bat (syntax highlighting)"
-        log_info "  ls -> eza (git info, icons)"
-        log_info "  find -> fd (fast search)"
-        log_info "  grep -> rg (fast grep)"
-        log_info "  + fzf, jq, gh integration"
+        log_info "Development environment installed. Includes:"
+        log_info "  • Build tools and development libraries"
+        log_info "  • Essential packages: git, curl, zsh, neovim, htop, tig, etc."
+        log_info "  • Modern tools: bat, fd, ripgrep, fzf, jq, eza, gh"
+        log_info "  • Enhanced aliases: cat->bat, ls->eza, find->fd, grep->rg"
+        log_info "  • Complete setup for Python, Ruby, Node.js development"
     fi
     
     if [[ "$DRY_RUN" == "false" ]]; then
