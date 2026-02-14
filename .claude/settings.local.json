@@ -4,7 +4,13 @@
       "Bash(git add:*)",
       "Bash(chmod:*)",
       "Bash(./install.sh:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(grep:*)",
+      "Bash(source:*)",
+      "Bash(claude --version)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(git rm:*)"
     ],
     "deny": []
   }
