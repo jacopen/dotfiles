@@ -10,7 +10,9 @@
       "Bash(claude --version)",
       "Bash(find:*)",
       "Bash(ls:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(tmux show-options:*)",
+      "Bash(tmux:*)"
     ],
     "deny": []
   }
