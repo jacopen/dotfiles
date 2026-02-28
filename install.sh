@@ -17,6 +17,7 @@ VERBOSE=false
 INSTALL_TOOLS=false
 TOOLS_ONLY=false
 USE_MODERN_ZSH=false
+ZSH_MODULES=""  # 空=自動検出
 
 # Colors for output
 RED='\033[0;31m'
@@ -510,6 +511,8 @@ OPTIONS:
     -t, --install-tools         Install complete development environment (build tools, dev packages, modern tools)
     --skip-tools                Skip tools installation (default)
     --tools-only                Only install tools, skip dotfiles setup
+    --zsh-modules MODULES       Comma-separated list of zsh modules to enable (default: auto-detect)
+                                Available: brew, rbenv, flutter, cocoapods, cursor
     --modern-zsh                Use modern Zinit-based .zshrc instead of legacy version
     --dry-run                   Show what would be done without making changes
     -v, --verbose               Verbose output
@@ -530,6 +533,9 @@ EXAMPLES:
 
     # Install only development environment, skip dotfiles
     ./install.sh --tools-only
+
+    # Enable only specific zsh modules
+    ./install.sh --zsh-modules brew,cursor
 
     # Dry run to see what would be installed
     ./install.sh --install-tools --dry-run
@@ -573,6 +579,10 @@ while [[ $# -gt 0 ]]; do
             TOOLS_ONLY=true
             shift
             ;;
+        --zsh-modules)
+            ZSH_MODULES="$2"
+            shift 2
+            ;;
         --modern-zsh)
             USE_MODERN_ZSH=true
             shift
@@ -614,6 +624,7 @@ echo "  Shell Type:   $SHELL_TYPE"
 echo "  Install Tools: $INSTALL_TOOLS"
 echo "  Tools Only:   $TOOLS_ONLY"
 echo "  Modern Zsh:   $USE_MODERN_ZSH"
+echo "  Zsh Modules:  ${ZSH_MODULES:-auto-detect}"
 echo "  Dry Run:      $DRY_RUN"
 
 if [[ "$DRY_RUN" == "true" ]]; then
@@ -626,6 +637,32 @@ TEMPLATES_DIR="$SCRIPT_DIR/templates"
 
 # External generation directory (XDG-compliant)
 GENERATED_DIR="${XDG_CONFIG_HOME:-$HOME_DIR/.config}/dotfiles/generated"
+
+# Auto-detect available zsh modules based on installed tools
+auto_detect_zsh_modules() {
+    local detected=""
+    # brew: Homebrewのインストール有無を確認
+    if command -v brew &>/dev/null || [[ -x /opt/homebrew/bin/brew ]] || [[ -x /usr/local/bin/brew ]] || [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+        detected="${detected:+$detected,}brew"
+    fi
+    # rbenv
+    if command -v rbenv &>/dev/null || [[ -d "$HOME_DIR/.rbenv" ]]; then
+        detected="${detected:+$detected,}rbenv"
+    fi
+    # flutter
+    if command -v flutter &>/dev/null || [[ -d "$HOME_DIR/flutter" ]]; then
+        detected="${detected:+$detected,}flutter"
+    fi
+    # cocoapods
+    if command -v pod &>/dev/null; then
+        detected="${detected:+$detected,}cocoapods"
+    fi
+    # cursor (.local/bin)
+    if [[ -d "$HOME_DIR/.local/bin" ]]; then
+        detected="${detected:+$detected,}cursor"
+    fi
+    echo "$detected"
+}
 
 # Create generation directory
 create_generated_dir() {
@@ -730,6 +767,33 @@ main() {
         # Create generation directory
         create_generated_dir
         
+        # Resolve zsh modules
+        if [[ -z "$ZSH_MODULES" ]]; then
+            ZSH_MODULES="$(auto_detect_zsh_modules)"
+            log_info "Auto-detected zsh modules: ${ZSH_MODULES:-none}"
+        else
+            log_info "Using specified zsh modules: $ZSH_MODULES"
+        fi
+
+        # Link enabled zsh modules to generated directory
+        log_info "Setting up zsh modules..."
+        IFS=',' read -ra _modules <<< "$ZSH_MODULES"
+        for mod in "${_modules[@]}"; do
+            mod="$(echo "$mod" | xargs)"  # trim whitespace
+            local src="$SCRIPT_DIR/zsh/$mod"
+            local dst="$GENERATED_DIR/zsh/$mod"
+            if [[ -f "$src" ]]; then
+                if [[ "$DRY_RUN" == "false" ]]; then
+                    ln -sf "$src" "$dst"
+                    log_success "Enabled zsh module: $mod"
+                else
+                    log_info "Would enable zsh module: $mod"
+                fi
+            else
+                log_warning "Zsh module file not found: $src"
+            fi
+        done
+
         # Process templates to external directory
         log_info "Processing templates to external directory..."
         

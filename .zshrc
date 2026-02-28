@@ -269,10 +269,13 @@ alias grill='ssh'
 # http://logrepo.blogspot.com/2010/12/zsh.html
 export PATH=~/bin:$PATH
 
-for filepath in $(ls --color=none ${HOME}/dotfiles/zsh)
-do
-  source ${HOME}/dotfiles/zsh/${filepath}
-done
+_zsh_generated_dir="${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/generated/zsh"
+if [[ -d "$_zsh_generated_dir" ]]; then
+    for filepath in "$_zsh_generated_dir"/*; do
+        [[ -f "$filepath" ]] && source "$filepath"
+    done
+fi
+unset _zsh_generated_dir
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/Users/kkusama/.sdkman"
